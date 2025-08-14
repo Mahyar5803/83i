@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>V2rayNG_Ghavi — سوپر اپ جمع‌کننده کانفیگ | GitHub Pages</title>
+  <meta name="description" content="خفن‌ترین سایت جمع‌کننده کانفیگ V2Ray/VLESS/VMess/Trojan/SS با تست تاخیر، فیلتر، سورت، QR، تم‌های نئونی، ذخیره محلی و خروجی ساب—بهینه برای GitHub Pages." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    :root{
+      --radius: 18px;
+      --glass-bg: rgba(255,255,255,0.08);
+      --glass-brd: rgba(255,255,255,0.2);
+      --glass-blur: 12px;
+    }
+    *{font-family: "Vazirmatn", system-ui, -apple-system, Segoe UI, Roboto, sans-serif}
+
+    /* Neon themes */
+    .theme-neon {
+      --bg: radial-gradient(1200px 800px at 10% -10%, #0ff2, transparent),
+            radial-gradient(1200px 800px at 110% 110%, #f0f2, transparent),
+            linear-gradient(180deg, #090a0f 0%, #05060a 100%);
+      --fg: #e6f4ff;
+      --muted: #9fb4c7;
+      --accent: #00e5ff;
+      --accent-2: #9b5cff;
+      --chip: rgba(255,255,255,0.06);
+    }
+    .theme-emerald {
+      --bg: radial-gradient(1000px 700px at -10% 20%, #22c55e33, transparent),
+            radial-gradient(1000px 700px at 110% 80%, #06b6d433, transparent),
+            linear-gradient(180deg, #06110a 0%, #040807 100%);
+      --fg: #eafff5;
+      --muted: #a7e7cf;
+      --accent: #34d399;
+      --accent-2: #06b6d4;
+      --chip: rgba(52,211,153,0.08);
+    }
+    .theme-rose {
+      --bg: radial-gradient(1200px 700px at 10% 0%, #fb718533, transparent),
+            radial-gradient(1200px 700px at 90% 100%, #60a5fa33, transparent),
+            linear-gradient(180deg, #19040a 0%, #0c0411 100%);
+      --fg: #fff0f3;
+      --muted: #ffd1da;
+      --accent: #fb7185;
+      --accent-2: #60a5fa;
+      --chip: rgba(251,113,133,0.08);
+    }
+
+    body{background: var(--bg); color: var(--fg)}
+    .glass{background: var(--glass-bg); border: 1px solid var(--glass-brd); backdrop-filter: blur(var(--glass-blur)); border-radius: var(--radius)}
+    .chip{background: var(--chip); border: 1px solid var(--glass-brd); border-radius: 999px; padding: 6px 10px}
+    .accent{color: var(--accent)}
+    .accent-2{color: var(--accent-2)}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid var(--glass-brd);background:var(--glass-bg)}
+    .btn:hover{transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,0,0,0.25)}
+    .grid-cards{display:grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 14px}
+    .badge{font-size:12px; opacity:.9}
+    .kbd{border:1px solid var(--glass-brd); padding:2px 6px; border-radius:6px; background:rgba(0,0,0,0.2)}
+
+    /* Animated backbone */
+    #bg-canvas{position:fixed; inset:0; z-index:-1}
+
+    /* Scrollbars */
+    ::-webkit-scrollbar{height:10px;width:10px}
+    ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:999px}
+
+    /* Code/mono */
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
+
+    /* Dialog */
+    dialog::backdrop{backdrop-filter: blur(10px); background: rgba(0,0,0,0.5)}
+
+    /* Progress ring */
+    .ring{position:relative; width:42px; height:42px}
+    .ring svg{transform: rotate(-90deg)}
+  </style>
+</head>
+<body class="theme-neon selection:bg-cyan-400/30 selection:text-white">
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Top Bar -->
+  <header class="sticky top-0 z-30 glass">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-500 to-fuchsia-500 grid place-items-center text-xl">⚡️</div>
+      <div class="leading-tight">
+        <h1 class="text-xl font-extrabold tracking-tight">V2rayNG_<span class="accent">Ghavi</span></h1>
+        <p class="text-xs text-slate-300">GitHub Pages — نسخه فوق‌پیشرفته</p>
+      </div>
+      <div class="ms-auto flex items-center gap-2">
+        <a class="btn text-sm" target="_blank" rel="noopener" href="https://t.me/V2rayNG_Ghavi"><i class="ph ph-telegram-logo"></i><span>کانال تلگرام</span></a>
+        <button id="themeBtn" class="btn text-sm" title="تعویض تم"><i class="ph ph-palette"></i><span>تم</span></button>
+        <button id="aboutBtn" class="btn text-sm" title="درباره"><i class="ph ph-info"></i><span>درباره</span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="max-w-7xl mx-auto px-4 mt-8">
+    <div class="glass p-5 md:p-7">
+      <div class="flex flex-col md:flex-row gap-6 items-start md:items-center">
+        <div class="flex-1">
+          <h2 class="text-2xl md:text-3xl font-extrabold">خفن‌ترین سایت مدیریت و تست کانفیگ‌ها ✨</h2>
+          <p class="mt-2 text-slate-300">وارد کردن ساب‌لینک، تست تاخیر مرورگر، مرتب‌سازی، فیلتر، ساخت QR، خروجی ساب، ذخیره‌سازی محلی و UI نئونی—all in one!</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="chip text-xs">VLESS/VMess/Trojan/SS</span>
+            <span class="chip text-xs">HTTP-Ping (Browser)</span>
+            <span class="chip text-xs">QR & Export</span>
+            <span class="chip text-xs">LocalStorage</span>
+            <span class="chip text-xs">Neon/Glass UI</span>
+          </div>
+        </div>
+        <div class="flex-1 w-full">
+          <div class="grid gap-2">
+            <label class="text-sm">لینک ساب (Gist/Raw/GitHub/هر متن):</label>
+            <div class="flex gap-2">
+              <input id="subUrl" class="flex-1 glass px-3 py-2" placeholder="https://raw.githubusercontent.com/.../V2ray_Collector" />
+              <button id="fetchBtn" class="btn"><i class="ph ph-cloud-arrow-down"></i><span>دریافت</span></button>
+            </div>
+            <div class="flex gap-2">
+              <textarea id="pasteArea" class="glass w-full h-28 p-3" placeholder="یا اینجا لینک/متن/کانفیگ‌ها را پیست کنید (هر خط یک لینک)"></textarea>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button id="parseBtn" class="btn"><i class="ph ph-list-checks"></i><span>پردازش/افزودن</span></button>
+              <button id="clearBtn" class="btn"><i class="ph ph-broom"></i><span>پاکسازی</span></button>
+              <button id="loadDemoBtn" class="btn"><i class="ph ph-sparkle"></i><span>نمونه</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Controls -->
+  <section class="max-w-7xl mx-auto px-4 mt-6">
+    <div class="glass p-4 flex flex-col md:flex-row gap-3 md:items-center">
+      <div class="flex flex-1 gap-2 items-center">
+        <i class="ph ph-magnifying-glass text-xl"></i>
+        <input id="searchBox" class="glass w-full px-3 py-2" placeholder="جستجو: نام/هاست/پروتکل/یادداشت" />
+      </div>
+      <div class="flex gap-2 items-center">
+        <select id="protoFilter" class="glass px-2 py-2 text-sm">
+          <option value="all">همه پروتکل‌ها</option>
+          <option value="vless">VLESS</option>
+          <option value="vmess">VMess</option>
+          <option value="trojan">Trojan</option>
+          <option value="ss">Shadowsocks</option>
+        </select>
+        <select id="sortSelect" class="glass px-2 py-2 text-sm">
+          <option value="latency-asc">کمترین تاخیر</option>
+          <option value="latency-desc">بیشترین تاخیر</option>
+          <option value="host-asc">هاست A→Z</option>
+          <option value="host-desc">هاست Z→A</option>
+          <option value="recent">آخرین تست</option>
+        </select>
+        <div class="flex items-center gap-2">
+          <span class="text-xs">تاخیر ≤</span>
+          <input id="latencyMax" type="range" min="50" max="3000" step="50" value="2000" />
+          <span id="latencyMaxLabel" class="chip text-xs">2000ms</span>
+        </div>
+        <button id="testAllBtn" class="btn"><i class="ph ph-wave-sine"></i><span>تست سریع همه</span></button>
+        <button id="exportBtn" class="btn"><i class="ph ph-export"></i><span>خروجی ساب</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="max-w-7xl mx-auto px-4 mt-4">
+    <div class="glass p-4 grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+      <div class="p-3 rounded-xl border border-white/10">
+        <div class="text-xs text-slate-300">تعداد کل</div>
+        <div id="statTotal" class="text-2xl font-extrabold">0</div>
+      </div>
+      <div class="p-3 rounded-xl border border-white/10">
+        <div class="text-xs text-slate-300">میانگین تاخیر</div>
+        <div id="statAvg" class="text-2xl font-extrabold">—</div>
+      </div>
+      <div class="p-3 rounded-xl border border-white/10">
+        <div class="text-xs text-slate-300">VLESS/VMess</div>
+        <div id="statTypes" class="text-2xl font-extrabold">0 / 0</div>
+      </div>
+      <div class="p-3 rounded-xl border border-white/10">
+        <div class="text-xs text-slate-300">ذخیره محلی</div>
+        <div id="statSaved" class="text-2xl font-extrabold">0</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cards -->
+  <section class="max-w-7xl mx-auto px-4 mt-4 mb-24">
+    <div id="cards" class="grid-cards"></div>
+  </section>
+
+  <!-- Footer / Actions -->
+  <footer class="fixed bottom-3 inset-x-0">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="glass p-3 flex flex-wrap items-center gap-2">
+        <div class="text-sm">ساخته شده با ❤️ توسط <span class="font-bold">V2rayNG_<span class="accent">Ghavi</span></span></div>
+        <div class="ms-auto flex gap-2">
+          <button id="saveBtn" class="btn text-sm" title="ذخیره در مرورگر"><i class="ph ph-floppy-disk"></i><span>ذخیره</span></button>
+          <button id="loadBtn" class="btn text-sm" title="بازیابی ذخیره"><i class="ph ph-tray-arrow-down"></i><span>بازیابی</span></button>
+          <button id="wipeBtn" class="btn text-sm" title="حذف همه"><i class="ph ph-trash"></i><span>حذف همه</span></button>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Dialogs -->
+  <dialog id="aboutDialog" class="glass p-0 w-[min(720px,95vw)]">
+    <div class="p-5">
+      <div class="flex items-center gap-2">
+        <i class="ph ph-sparkle text-2xl accent"></i>
+        <h3 class="text-xl font-extrabold">درباره این پروژه</h3>
+        <button class="ms-auto btn text-sm" onclick="aboutDialog.close()"><i class="ph ph-x"></i>بستن</button>
+      </div>
+      <p class="mt-3 text-slate-200 leading-8">این یک اپ فرانت‌اند ۱۰۰٪ سمت کاربره که روی GitHub Pages اجرا می‌شه. قابلیت‌ها: خواندن ساب، پارس انواع لینک‌ها، تست تاخیر HTTP در مرورگر، سورت/فیلتر، ساخت QR، خروجی ساب، تم‌های نئونی و ذخیره در LocalStorage. اگر هاست بعضی کانفیگ‌ها به درخواست‌های HTTPS پاسخ نده، تست تاخیر ممکنه شکست بخوره—که طبیعی‌ست چون در مرورگر ICMP پینگ دسترس نیست و از روش <span class="mono">fetch</span> زمان‌دار استفاده می‌کنیم.</p>
+      <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div class="chip">⚙️ HTTP-Ping سه‌مرحله‌ای با میانگین</div>
+        <div class="chip">✨ Neon/Glass UI با انیمیشن پس‌زمینه</div>
+        <div class="chip">🧠 پارسر VLESS/VMess/Trojan/SS</div>
+        <div class="chip">📦 خروجی Subscription</div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="qrDialog" class="glass p-0 w-[min(520px,92vw)]">
+    <div class="p-5">
+      <div class="flex items-center gap-2">
+        <i class="ph ph-qr-code text-2xl accent"></i>
+        <h3 class="text-xl font-extrabold">QR کانفیگ</h3>
+        <button class="ms-auto btn text-sm" onclick="qrDialog.close()"><i class="ph ph-x"></i>بستن</button>
+      </div>
+      <div class="mt-4 grid gap-2">
+        <div id="qrCanvas" class="mx-auto"></div>
+        <div id="qrText" class="mono text-xs break-all glass p-2"></div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Scripts -->
+  <script>
+  // ============================
+  // Animated Background (Canvas)
+  // ============================
+  (function(){
+    const c = document.getElementById('bg-canvas');
+    const ctx = c.getContext('2d');
+    let w, h, dpr;
+    function resize(){
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = c.width = innerWidth * dpr; h = c.height = innerHeight * dpr;
+      c.style.width = innerWidth + 'px'; c.style.height = innerHeight + 'px';
+    }
+    addEventListener('resize', resize, {passive:true}); resize();
+    const N = 60; const pts = Array.from({length:N}, ()=>({
+      x: Math.random()*w, y: Math.random()*h,
+      vx: (Math.random()*2-1)*0.25, vy: (Math.random()*2-1)*0.25
+    }));
+    function loop(){
+      ctx.clearRect(0,0,w,h);
+      for(const p of pts){
+        p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>w) p.vx*=-1; if(p.y<0||p.y>h) p.vy*=-1;
+      }
+      // connections
+      for(let i=0;i<N;i++) for(let j=i+1;j<N;j++){
+        const a=pts[i], b=pts[j]; const dx=a.x-b.x, dy=a.y-b.y; const dist = Math.hypot(dx,dy);
+        if(dist<180*dpr){
+          const o = (1 - dist/(180*dpr)) * 0.35;
+          const g = ctx.createLinearGradient(a.x,a.y,b.x,b.y);
+          g.addColorStop(0,'rgba(0,229,255,'+o+')'); g.addColorStop(1,'rgba(155,92,255,'+o+')');
+          ctx.strokeStyle = g; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        }
+      }
+      for(const p of pts){
+        ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.beginPath(); ctx.arc(p.x,p.y,1.2*dpr,0,Math.PI*2); ctx.fill();
+      }
+      requestAnimationFrame(loop);
+    } loop();
+  })();
+
+  // ============================
+  // Utilities
+  // ============================
+  const $ = (sel, el=document) => el.querySelector(sel);
+  const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const now = () => new Date().toISOString();
+
+  function fmtMs(ms){ if(ms===Infinity) return '∞'; if(!isFinite(ms)) return '—'; return Math.round(ms)+"ms" }
+  function hash(s){ let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i)|0 } return (h>>>0).toString(16) }
+  function flagByHost(host){
+    try{
+      if(!host) return '🌐';
+      // cheap ccTLD map
+      const m = host.toLowerCase().match(/\.([a-z]{2})$/);
+      if(m){
+        const cc = m[1];
+        const f = {
+          ir:'🇮🇷', ru:'🇷🇺', tr:'🇹🇷', de:'🇩🇪', fr:'🇫🇷', us:'🇺🇸', uk:'🇬🇧', ca:'🇨🇦', nl:'🇳🇱', se:'🇸🇪', es:'🇪🇸', it:'🇮🇹', in:'🇮🇳', cn:'🇨🇳', hk:'🇭🇰', jp:'🇯🇵', sg:'🇸🇬', ae:'🇦🇪', sa:'🇸🇦', qa:'🇶🇦', fi:'🇫🇮', no:'🇳🇴', dk:'🇩🇰', pl:'🇵🇱', cz:'🇨🇿', ro:'🇷🇴', bg:'🇧🇬', gr:'🇬🇷', az:'🇦🇿', am:'🇦🇲', ge:'🇬🇪', ar:'🇦🇷', br:'🇧🇷', mx:'🇲🇽', au:'🇦🇺', nz:'🇳🇿'
+        }[cc];
+        return f||'🌐';
+      }
+      return '🌐';
+    }catch{ return '🌐' }
+  }
+
+  // ============================
+  // Parsers
+  // ============================
+  function parseLine(line){
+    line = line.trim(); if(!line) return null;
+    try{
+      if(line.startsWith('vless://')) return parseVLESS(line);
+      if(line.startsWith('vmess://')) return parseVMess(line);
+      if(line.startsWith('trojan://')) return parseTrojan(line);
+      if(line.startsWith('ss://')) return parseSS(line);
+    }catch(e){ console.warn('parse error', e) }
+    return { raw: line, type: 'raw', id: hash(line), name: 'RAW', host: '', port: '', path: '', tls: '', note: '' };
+  }
+
+  function parseQuery(qs){ const o={}; new URLSearchParams(qs).forEach((v,k)=>o[k]=v); return o }
+
+  function parseVLESS(url){
+    const u = new URL(url);
+    const id = u.username; const host = u.hostname; const port = u.port || '443';
+    const params = parseQuery(u.search.slice(1));
+    const name = decodeURIComponent(u.hash?.slice(1) || '') || host;
+    const path = params.path ? decodeURIComponent(params.path) : '/';
+    const tls = params.security || 'none';
+    return { raw:url, type:'vless', id, host, port, path, tls, name, note:'', alpn: params.alpn||'', sni: params.sni||u.hostname };
+  }
+
+  function parseVMess(url){
+    const b64 = url.slice('vmess://'.length);
+    const json = JSON.parse(atob(b64.replace(/-/g,'+').replace(/_/g,'/')));
+    const name = json.ps || json.add || 'VMess';
+    return { raw:url, type:'vmess', id: json.id, host: json.add, port: String(json.port||443), path: json.path||'/', tls: json.tls||'none', name, note:'', sni: json.sni||json.add };
+  }
+
+  function parseTrojan(url){
+    const u = new URL(url);
+    const id = u.username; const host = u.hostname; const port = u.port || '443';
+    const params = parseQuery(u.search.slice(1));
+    const name = decodeURIComponent(u.hash?.slice(1) || '') || host;
+    return { raw:url, type:'trojan', id, host, port, path:'/', tls: params.security||'tls', name, note:'', sni: params.sni||host };
+  }
+
+  function parseSS(url){
+    // ss://method:password@host:port#name  OR base64 part
+    let rest = url.slice('ss://'.length);
+    if(rest.includes('@')){
+      const [cred, hostPart] = rest.split('@');
+      const [method, password] = cred.split(':');
+      const [host, portAndHash] = hostPart.split(':');
+      const [port, hashName] = portAndHash.split('#');
+      const name = decodeURIComponent(hashName||'SS');
+      return { raw:url, type:'ss', id: btoa(method+':'+password), host, port, path:'/', tls:'none', name, note:'' };
+    }else{
+      const decoded = atob(rest.split('#')[0]);
+      const [cred, hostPort] = decoded.split('@');
+      const [method, password] = cred.split(':');
+      const [host, port] = hostPort.split(':');
+      const name = decodeURIComponent((url.split('#')[1])||'SS');
+      return { raw:url, type:'ss', id: btoa(method+':'+password), host, port, path:'/', tls:'none', name, note:'' };
+    }
+  }
+
+  // ============================
+  // Store & State
+  // ============================
+  const state = { items: [], filtered: [], selection: new Set(), theme: localStorage.getItem('theme')||'neon' };
+
+  function addLines(text){
+    const lines = text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    const parsed = lines.map(parseLine).filter(Boolean);
+    for(const p of parsed){
+      if(state.items.some(x=>x.raw===p.raw)) continue; // dedupe
+      p.key = hash(p.raw);
+      p.latency = Infinity; p.last = ''; p.ok = false;
+      state.items.push(p);
+    }
+    saveStats();
+    applyFilters();
+    renderCards();
+  }
+
+  // ============================
+  // HTTP Ping (Browser)
+  // ============================
+  async function httpPingHost(host, opts={}){
+    // Try HTTPS fetch to host root; use no-cors to avoid CORS failure; measure elapsed time
+    const timeout = opts.timeout||3500;
+    const controller = new AbortController();
+    const t = setTimeout(()=>controller.abort('timeout'), timeout);
+    const start = performance.now();
+    try{
+      await fetch(`https://${host}/`, {mode:'no-cors', cache:'no-store', signal: controller.signal});
+      const ms = performance.now()-start; return ms;
+    }catch(e){ return Infinity }
+    finally{ clearTimeout(t) }
+  }
+
+  async function testItem(item, rounds=2){
+    const host = item.host || (()=>{ try{ return new URL(item.raw).hostname }catch{ return '' } })();
+    if(!host){ item.latency=Infinity; item.ok=false; item.last=now(); return item }
+    const tries = [];
+    for(let i=0;i<rounds;i++){ const ms = await httpPingHost(host, {timeout: 2500}); tries.push(ms); await sleep(80) }
+    // filter Infinity & take avg of finite else Infinity
+    const finite = tries.filter(Number.isFinite);
+    const avg = finite.length? finite.reduce((a,b)=>a+b,0)/finite.length : Infinity;
+    item.latency = avg; item.ok = finite.length>0; item.last=now();
+    return item;
+  }
+
+  async function testAll(){
+    const arr = state.filtered.length? state.filtered : state.items;
+    // run in small concurrency batches to avoid hammering
+    const BATCH=6; let i=0;
+    while(i<arr.length){
+      const slice = arr.slice(i, i+BATCH);
+      await Promise.all(slice.map(it=>testItem(it).then(()=>updateCardRow(it))));
+      i+=BATCH;
+      saveStats();
+    }
+    sortNow();
+  }
+
+  // ============================
+  // Filter/Sort/Search
+  // ============================
+  function applyFilters(){
+    const q = $('#searchBox').value.trim().toLowerCase();
+    const proto = $('#protoFilter').value;
+    const latMax = Number($('#latencyMax').value);
+    state.filtered = state.items.filter(it=>{
+      const m1 = (proto==='all' || it.type===proto);
+      const m2 = (it.latency===Infinity? true : it.latency<=latMax);
+      const text = [it.name,it.host,it.type,it.note].join(' ').toLowerCase();
+      const m3 = !q || text.includes(q);
+      return m1 && m2 && m3;
+    });
+  }
+  function sortNow(){
+    const mode = $('#sortSelect').value;
+    const arr = state.filtered;
+    const cmp = {
+      'latency-asc': (a,b)=>(a.latency||Infinity)-(b.latency||Infinity),
+      'latency-desc': (a,b)=>(b.latency||Infinity)-(a.latency||Infinity),
+      'host-asc': (a,b)=> String(a.host).localeCompare(String(b.host)),
+      'host-desc': (a,b)=> String(b.host).localeCompare(String(a.host)),
+      'recent': (a,b)=> String(b.last).localeCompare(String(a.last))
+    }[mode];
+    arr.sort(cmp);
+    renderCards();
+  }
+
+  // ============================
+  // Render
+  // ============================
+  function saveStats(){
+    $('#statTotal').textContent = state.items.length;
+    const finite = state.items.map(x=>x.latency).filter(Number.isFinite);
+    $('#statAvg').textContent = finite.length? fmtMs(finite.reduce((a,b)=>a+b,0)/finite.length) : '—';
+    const vless = state.items.filter(x=>x.type==='vless').length;
+    const vmess = state.items.filter(x=>x.type==='vmess').length;
+    $('#statTypes').textContent = vless + ' / ' + vmess;
+    $('#statSaved').textContent = (localStorage.getItem('V2NG_DATA')? JSON.parse(localStorage.getItem('V2NG_DATA')).length: 0);
+  }
+
+  function card(it){
+    const ok = it.ok; const lat = fmtMs(it.latency);
+    const flag = flagByHost(it.host);
+    const protoColor = {
+      vless:'from-cyan-500 to-fuchsia-500',
+      vmess:'from-emerald-500 to-cyan-500',
+      trojan:'from-rose-500 to-amber-400',
+      ss:'from-sky-400 to-indigo-500',
+      raw:'from-slate-600 to-slate-800'
+    }[it.type] || 'from-slate-700 to-slate-800';
+
+    return `
+    <div class="card glass p-3" data-key="${it.key}">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${protoColor} grid place-items-center text-lg">${flag}</div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <div class="font-extrabold truncate">${escapeHtml(it.name||it.host||it.type.toUpperCase())}</div>
+            <span class="badge chip mono">${it.type.toUpperCase()}</span>
+            ${it.tls && it.tls!=='none'? `<span class="badge chip">TLS</span>`:''}
+          </div>
+          <div class="text-xs text-slate-300 mono truncate">${escapeHtml(it.host||'')}</div>
+          <div class="text-xs text-slate-400">${it.last? `آخرین تست: ${new Date(it.last).toLocaleString()}`: '—'}</div>
+        </div>
+        <div class="ring" title="تاخیر">
+          <svg width="42" height="42" viewBox="0 0 42 42">
+            <circle cx="21" cy="21" r="18" stroke="rgba(255,255,255,0.1)" stroke-width="4" fill="none"></circle>
+            <circle cx="21" cy="21" r="18" stroke="${ok? 'url(#g'+it.key+')':'rgba(255,255,255,0.2)'}" stroke-width="4" fill="none" stroke-dasharray="${ok? Math.max(10, 113 - Math.min(100, it.latency/20))*1.1:113}" stroke-dashoffset="0" stroke-linecap="round"></circle>
+            <defs>
+              <linearGradient id="g${it.key}" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00e5ff"/>
+                <stop offset="100%" stop-color="#9b5cff"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="absolute inset-0 grid place-items-center text-xs mono">${lat}</div>
+        </div>
+      </div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button class="btn text-sm" onclick="doTest('${it.key}')"><i class="ph ph-wave-sine"></i>تست</button>
+        <button class="btn text-sm" onclick="showQR('${it.key}')"><i class="ph ph-qr-code"></i>QR</button>
+        <button class="btn text-sm" onclick="copyLink('${it.key}')"><i class="ph ph-copy"></i>کپی</button>
+        <button class="btn text-sm" onclick="toggleSelect('${it.key}')"><i class="ph ph-check-square"></i>انتخاب</button>
+        <button class="btn text-sm" onclick="editNote('${it.key}')"><i class="ph ph-note-pencil"></i>یادداشت</button>
+        <button class="btn text-sm" onclick="removeItem('${it.key}')"><i class="ph ph-trash"></i>حذف</button>
+      </div>
+    </div>`
+  }
+
+  function renderCards(){
+    $('#cards').innerHTML = state.filtered.map(card).join('');
+  }
+
+  function updateCardRow(it){
+    const el = document.querySelector(`[data-key="${it.key}"]`);
+    if(!el) return;
+    el.outerHTML = card(it);
+  }
+
+  function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c])) }
+
+  // ============================
+  // Actions
+  // ============================
+  async function doTest(key){
+    const it = state.items.find(x=>x.key===key); if(!it) return;
+    await testItem(it, 3); updateCardRow(it); saveStats(); sortNow();
+  }
+
+  function copyLink(key){
+    const it = state.items.find(x=>x.key===key); if(!it) return;
+    navigator.clipboard.writeText(it.raw); toast('لینک کپی شد ✅');
+  }
+
+  function toggleSelect(key){
+    if(state.selection.has(key)){ state.selection.delete(key); toast('از انتخاب خارج شد'); }
+    else{ state.selection.add(key); toast('انتخاب شد ✅') }
+  }
+
+  function editNote(key){
+    const it = state.items.find(x=>x.key===key); if(!it) return;
+    const note = prompt('یادداشت برای این کانفیگ:', it.note||'');
+    if(note!==null){ it.note = note; updateCardRow(it) }
+  }
+
+  function removeItem(key){
+    const i = state.items.findIndex(x=>x.key===key); if(i>=0){ state.items.splice(i,1); applyFilters(); renderCards(); saveStats() }
+  }
+
+  function exportSelected(){
+    const keys = Array.from(state.selection);
+    const arr = (keys.length? state.items.filter(x=>keys.includes(x.key)) : state.filtered);
+    const text = arr.map(x=>x.raw).join('\n');
+    navigator.clipboard.writeText(text);
+    // also download as .txt
+    const blob = new Blob([text], {type:'text/plain'});
+    const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='subscription.txt'; a.click(); URL.revokeObjectURL(a.href);
+    toast('خروجی در کلیپ‌بورد و فایل ✅');
+  }
+
+  function saveLocal(){ localStorage.setItem('V2NG_DATA', JSON.stringify(state.items)); toast('در مرورگر ذخیره شد ✅'); saveStats() }
+  function loadLocal(){ const s = localStorage.getItem('V2NG_DATA'); if(!s) return toast('چیزی ذخیره نشده'); state.items = JSON.parse(s); applyFilters(); renderCards(); saveStats(); toast('بازیابی شد ✅') }
+  function wipeAll(){ if(confirm('همه موارد حذف شوند؟')){ state.items=[]; state.filtered=[]; state.selection.clear(); renderCards(); saveStats(); toast('حذف شد') } }
+
+  async function showQR(key){
+    const it = state.items.find(x=>x.key===key); if(!it) return;
+    $('#qrCanvas').innerHTML=''; QRCode.toCanvas(it.raw, {width:320, margin:1}, (err, canvas)=>{ if(!err) $('#qrCanvas').appendChild(canvas) });
+    $('#qrText').textContent = it.raw;
+    qrDialog.showModal();
+  }
+
+  // ============================
+  // Fetch & Parse
+  // ============================
+  async function fetchText(url){
+    const res = await fetch(url, {cache:'no-store'}); if(!res.ok) throw new Error('HTTP '+res.status); return await res.text();
+  }
+
+  async function handleFetch(){
+    const u = $('#subUrl').value.trim(); if(!u) return toast('لینک را وارد کنید');
+    try{
+      const txt = await fetchText(u);
+      addLines(txt);
+      toast('دریافت و پردازش شد ✅');
+    }catch(e){ toast('خطا در دریافت: '+e.message) }
+  }
+
+  function handleParse(){
+    const t = $('#pasteArea').value.trim(); if(!t) return toast('چیزی پیست نشده');
+    addLines(t); $('#pasteArea').value=''; toast('پردازش شد ✅');
+  }
+
+  function loadDemo(){
+    const demo=`
+    vless://ff07b842-1957-4bff-bcd7-f2bd6bd6dd69@172.67.203.1:443?path=%2Ftest&security=tls#VLESS-CF
+    vmess://eyJhZGQiOiJleGFtcGxlLmNvbSIsImFpZCI6MCwiaG9zdCI6IiIsImlkIjoiZjEwYzBmYzktMDQyYy00ZTk4LTg0YTQtYzUxYzE1N2YzMTc5IiwibmV0Ijoid3MiLCJwYXRoIjoiL2FwaSIsInBvcnQiOiI0NDMiLCJwcyI6IlZNZXNzLVdlYiIsInRscyI6InRscyIsInR5cGUiOiIiLCJ2IjoiMiJ9
+    trojan://password@example.org:443#Trojan-Example
+    ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpzZWNyZXQ=@1.2.3.4:443#SS-Example
+    `;
+    addLines(demo);
+  }
+
+  // ============================
+  // Toasts
+  // ============================
+  let toastTimer;
+  function toast(msg){
+    clearTimeout(toastTimer);
+    let t = $('#toast');
+    if(!t){ t = document.createElement('div'); t.id='toast'; t.className='fixed top-4 left-1/2 -translate-x-1/2 glass px-4 py-2 text-sm'; document.body.appendChild(t) }
+    t.textContent = msg; t.style.opacity=1; toastTimer=setTimeout(()=>t.style.opacity=0, 3000);
+  }
+
+  // ============================
+  // Theme Switcher
+  // ============================
+  const themes = ['neon','emerald','rose'];
+  function applyTheme(name){
+    document.body.classList.remove('theme-neon','theme-emerald','theme-rose');
+    document.body.classList.add('theme-'+name);
+    state.theme = name; localStorage.setItem('theme', name);
+  }
+  function cycleTheme(){ const i = themes.indexOf(state.theme); const next = themes[(i+1)%themes.length]; applyTheme(next); toast('تم تغییر کرد: '+next) }
+
+  // ============================
+  // Service Worker (inline)
+  // ============================
+  if('serviceWorker' in navigator){
+    const swCode = `self.addEventListener('install',e=>{self.skipWaiting()}); self.addEventListener('activate',e=>{clients.claim()});`;
+    const blob = new Blob([swCode], {type:'text/javascript'});
+    const url = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(url).catch(()=>{});
+  }
+
+  // ============================
+  // Events & Init
+  // ============================
+  window.addEventListener('DOMContentLoaded', ()=>{
+    // Theme
+    applyTheme(state.theme);
+
+    // Bindings
+    $('#fetchBtn').addEventListener('click', handleFetch);
+    $('#parseBtn').addEventListener('click', handleParse);
+    $('#clearBtn').addEventListener('click', ()=>{$('#pasteArea').value=''})
+    $('#loadDemoBtn').addEventListener('click', loadDemo);
+
+    $('#searchBox').addEventListener('input', ()=>{applyFilters(); sortNow()});
+    $('#protoFilter').addEventListener('change', ()=>{applyFilters(); sortNow()});
+    $('#sortSelect').addEventListener('change', sortNow);
+    $('#latencyMax').addEventListener('input', (e)=>{ $('#latencyMaxLabel').textContent = e.target.value+'ms'; applyFilters(); sortNow() });
+
+    $('#testAllBtn').addEventListener('click', testAll);
+    $('#exportBtn').addEventListener('click', exportSelected);
+
+    $('#saveBtn').addEventListener('click', saveLocal);
+    $('#loadBtn').addEventListener('click', loadLocal);
+    $('#wipeBtn').addEventListener('click', wipeAll);
+
+    $('#themeBtn').addEventListener('click', cycleTheme);
+    $('#aboutBtn').addEventListener('click', ()=>aboutDialog.showModal());
+
+    // Keyboard shortcuts
+    window.addEventListener('keydown', (e)=>{
+      if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+      if(e.key.toLowerCase()==='t'){ cycleTheme() }
+      if(e.key.toLowerCase()==='e'){ exportSelected() }
+      if(e.key.toLowerCase()==='f'){ testAll() }
+    });
+
+    // Initial state
+    applyFilters(); renderCards(); saveStats();
+  });
+
+  </script>
+</body>
+</html>
